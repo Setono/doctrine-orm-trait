@@ -24,6 +24,9 @@ use Setono\Doctrine\ORMTrait;
 
 final class YourClass
 {
+    /**
+     * Include this trait to use the getManager() and getRepository() methods below
+     */
     use ORMTrait;
     
     public function __construct(ManagerRegistry $managerRegistry)
@@ -34,13 +37,14 @@ final class YourClass
     public function someMethod(): void
     {
         /**
-         * $entity is an entity managed by Doctrine or a class-string representing an entity managed by Doctrine
+         * $entity<T> is an entity managed by Doctrine or a class-string representing an entity managed by Doctrine
          */
         $entity = ;
         
+        /** @var \Doctrine\ORM\EntityRepository<T> $repository */
+        $repository = $this->getRepository($entity);
+        
         /**
-         * Because we used the ORMTrait above the getManager method will return an EntityManagerInterface
-         * 
          * @var \Doctrine\ORM\EntityManagerInterface $manager 
          */
         $manager = $this->getManager($entity);
