@@ -78,6 +78,25 @@ final class ORMTraitTest extends TestCase
 
         $managerTraitAware->getManagerTest();
     }
+
+    /**
+     * @test
+     */
+    public function it_throws_if_repository_is_not_the_correct_type(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $repository = $this->prophesize(EntityRepository::class);
+
+        $manager = $this->prophesize(EntityManagerInterface::class);
+        $manager->getRepository(Argument::type('string'))->willReturn($repository->reveal());
+
+        $managerRegistry = $this->prophesize(ManagerRegistry::class);
+        $managerRegistry->getManagerForClass(Argument::type('string'))->willReturn($manager->reveal());
+
+        $managerTraitAware = new ConcreteService($managerRegistry->reveal());
+        $managerTraitAware->getRepositoryWithTypeTest();
+    }
 }
 
 abstract class ManagerTraitAware
@@ -101,4 +120,18 @@ final class ConcreteService extends ManagerTraitAware
     {
         return $this->getRepository(new \stdClass());
     }
+
+    public function getRepositoryWithTypeTest(): EntityRepository
+    {
+        return $this->getRepository(new \stdClass(), TestRepository::class);
+    }
+}
+
+/**
+ * @template T of object
+ *
+ * @extends EntityRepository<T>
+ */
+final class TestRepository extends EntityRepository
+{
 }
