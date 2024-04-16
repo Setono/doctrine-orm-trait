@@ -51,6 +51,24 @@ final class ORMTraitTest extends TestCase
     /**
      * @test
      */
+    public function it_returns_repository_with_Type(): void
+    {
+        $repository = $this->prophesize(TestRepository::class);
+
+        $manager = $this->prophesize(EntityManagerInterface::class);
+        $manager->getRepository(Argument::type('string'))->willReturn($repository->reveal());
+
+        $managerRegistry = $this->prophesize(ManagerRegistry::class);
+        $managerRegistry->getManagerForClass(Argument::type('string'))->willReturn($manager->reveal());
+
+        $managerTraitAware = new ConcreteService($managerRegistry->reveal());
+
+        self::assertSame($repository->reveal(), $managerTraitAware->getRepositoryWithTypeTest());
+    }
+
+    /**
+     * @test
+     */
     public function it_throws_if_no_manager_exists_for_class(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -132,6 +150,6 @@ final class ConcreteService extends ManagerTraitAware
  *
  * @extends EntityRepository<T>
  */
-final class TestRepository extends EntityRepository
+class TestRepository extends EntityRepository
 {
 }
