@@ -7,7 +7,7 @@
         </include>
     </coverage>
     <testsuites>
-        <testsuite name="Doctrine Object Manager Trait Test Suite">
+        <testsuite name="Doctrine ORM Trait Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
