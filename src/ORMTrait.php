@@ -7,6 +7,7 @@ namespace Setono\Doctrine;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectRepository;
 
 trait ORMTrait
 {
@@ -43,12 +44,12 @@ trait ORMTrait
 
     /**
      * @template TEntity of object
-     * @template TRepository of EntityRepository
+     * @template TRepository of ObjectRepository
      *
      * @param TEntity|class-string<TEntity> $obj
      * @param class-string<TRepository>|null $expectedType
      *
-     * @psalm-return ($expectedType is null ? EntityRepository<TEntity> : TRepository)
+     * @psalm-return ($expectedType is null ? EntityRepository<TEntity> : TRepository&EntityRepository<TEntity>)
      */
     protected function getRepository(object|string $obj, string $expectedType = null): EntityRepository
     {
