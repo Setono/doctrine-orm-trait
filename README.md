@@ -58,7 +58,7 @@ final class YourClass
 [ico-version]: https://poser.pugx.org/setono/doctrine-orm-trait/v/stable
 [ico-license]: https://poser.pugx.org/setono/doctrine-orm-trait/license
 [ico-github-actions]: https://github.com/Setono/doctrine-orm-trait/workflows/build/badge.svg
-[ico-code-coverage]: https://codecov.io/gh/Setono/doctrine-orm-trait/branch/master/graph/badge.svg
+[ico-code-coverage]: https://codecov.io/gh/Setono/doctrine-orm-trait/graph/badge.svg
 [ico-infection]: https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FSetono%2Fdoctrine-orm-trait%2Fmaster
 
 [link-packagist]: https://packagist.org/packages/setono/doctrine-orm-trait
