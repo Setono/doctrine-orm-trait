@@ -35,17 +35,17 @@ final class ORMTraitTest extends TestCase
      */
     public function it_returns_repository(): void
     {
-        $repository = $this->prophesize(EntityRepository::class);
+        $repository = $this->createMock(EntityRepository::class);
 
         $manager = $this->prophesize(EntityManagerInterface::class);
-        $manager->getRepository(Argument::type('string'))->willReturn($repository->reveal());
+        $manager->getRepository(Argument::type('string'))->willReturn($repository);
 
         $managerRegistry = $this->prophesize(ManagerRegistry::class);
         $managerRegistry->getManagerForClass(Argument::type('string'))->willReturn($manager->reveal());
 
         $managerTraitAware = new ConcreteService($managerRegistry->reveal());
 
-        self::assertSame($repository->reveal(), $managerTraitAware->getRepositoryTest());
+        self::assertSame($repository, $managerTraitAware->getRepositoryTest());
     }
 
     /**
@@ -53,17 +53,17 @@ final class ORMTraitTest extends TestCase
      */
     public function it_returns_repository_with_Type(): void
     {
-        $repository = $this->prophesize(TestRepository::class);
+        $repository = $this->createMock(TestRepository::class);
 
         $manager = $this->prophesize(EntityManagerInterface::class);
-        $manager->getRepository(Argument::type('string'))->willReturn($repository->reveal());
+        $manager->getRepository(Argument::type('string'))->willReturn($repository);
 
         $managerRegistry = $this->prophesize(ManagerRegistry::class);
         $managerRegistry->getManagerForClass(Argument::type('string'))->willReturn($manager->reveal());
 
         $managerTraitAware = new ConcreteService($managerRegistry->reveal());
 
-        self::assertSame($repository->reveal(), $managerTraitAware->getRepositoryWithTypeTest());
+        self::assertSame($repository, $managerTraitAware->getRepositoryWithTypeTest());
     }
 
     /**
@@ -104,13 +104,13 @@ final class ORMTraitTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $repository = $this->prophesize(EntityRepository::class);
+        $repository = $this->createMock(EntityRepository::class);
 
         $manager = $this->prophesize(EntityManagerInterface::class);
-        $manager->getRepository(Argument::type('string'))->willReturn($repository->reveal());
+        $manager->getRepository(Argument::type('string'))->willReturn($repository);
 
         $managerRegistry = $this->prophesize(ManagerRegistry::class);
-        $managerRegistry->getManagerForClass(Argument::type('string'))->willReturn($manager->reveal());
+        $managerRegistry->getManagerForClass(Argument::type('string'))->willReturn($manager);
 
         $managerTraitAware = new ConcreteService($managerRegistry->reveal());
         $managerTraitAware->getRepositoryWithTypeTest();
