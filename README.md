@@ -44,10 +44,12 @@ final class YourClass
         /** @var \Doctrine\ORM\EntityRepository<T> $repository */
         $repository = $this->getRepository($entity);
         
-        /**
-         * @var \Doctrine\ORM\EntityManagerInterface $manager 
-         */
+        /** @var \Doctrine\ORM\EntityManagerInterface $manager */
         $manager = $this->getManager($entity);
+        
+        // or do the following to get the default entity manager
+        /** @var \Doctrine\ORM\EntityManagerInterface $manager */
+        $manager = $this->getManager();
         
         $manager->persist($entity);
         $manager->flush();

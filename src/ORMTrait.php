@@ -17,16 +17,25 @@ trait ORMTrait
     private readonly ManagerRegistry $managerRegistry;
 
     /**
-     * @param class-string|object $obj
+     * @param class-string|object|null $obj if null, the default entity manager will be returned
      *
-     * @throws \InvalidArgumentException if no manager exists for the class or if the manager is not an instance of EntityManagerInterface
+     * @throws \InvalidArgumentException if $obj is not given and more than one manager exists
+     * @throws \InvalidArgumentException if $obj is given and no manager exists for the class or if the manager is not an instance of EntityManagerInterface
      */
-    protected function getManager(object|string $obj): EntityManagerInterface
+    protected function getManager(object|string $obj = null): EntityManagerInterface
     {
-        $cls = is_object($obj) ? $obj::class : $obj;
+        $obj = is_object($obj) ? $obj::class : (string) $obj;
 
-        if (!isset($this->managers[$cls])) {
-            $manager = $this->managerRegistry->getManagerForClass($cls);
+        if (!isset($this->managers[$obj])) {
+            if ('' === $obj) {
+                if (count($this->managerRegistry->getManagerNames()) > 1) {
+                    throw new \InvalidArgumentException('More than one manager found. Please specify the class name');
+                }
+
+                $manager = $this->managerRegistry->getManager();
+            } else {
+                $manager = $this->managerRegistry->getManagerForClass($obj);
+            }
 
             if (!$manager instanceof EntityManagerInterface) {
                 throw new \InvalidArgumentException(sprintf(
@@ -36,10 +45,10 @@ trait ORMTrait
                 ));
             }
 
-            $this->managers[$cls] = $manager;
+            $this->managers[$obj] = $manager;
         }
 
-        return $this->managers[$cls];
+        return $this->managers[$obj];
     }
 
     /**
@@ -49,7 +58,7 @@ trait ORMTrait
      * @param TEntity|class-string<TEntity> $obj
      * @param class-string<TRepository>|null $expectedType
      *
-     * @psalm-return ($expectedType is null ? EntityRepository<TEntity> : TRepository&EntityRepository<TEntity>)
+     * @return ($expectedType is null ? EntityRepository<TEntity> : TRepository&EntityRepository<TEntity>)
      */
     protected function getRepository(object|string $obj, string $expectedType = null): EntityRepository
     {

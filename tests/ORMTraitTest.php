@@ -33,6 +33,21 @@ final class ORMTraitTest extends TestCase
     /**
      * @test
      */
+    public function it_returns_entity_manager_if_object_is_null(): void
+    {
+        $manager = $this->prophesize(EntityManagerInterface::class);
+        $managerRegistry = $this->prophesize(ManagerRegistry::class);
+        $managerRegistry->getManager()->willReturn($manager->reveal());
+        $managerRegistry->getManagerNames()->willReturn(['default']);
+
+        $managerTraitAware = new ConcreteService($managerRegistry->reveal());
+
+        self::assertSame($manager->reveal(), $managerTraitAware->getDefaultManagerTest());
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_repository(): void
     {
         $repository = $this->createMock(EntityRepository::class);
@@ -100,6 +115,23 @@ final class ORMTraitTest extends TestCase
     /**
      * @test
      */
+    public function it_throws_if_more_than_one_manager_exists(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $manager = $this->prophesize(EntityManagerInterface::class);
+        $managerRegistry = $this->prophesize(ManagerRegistry::class);
+        $managerRegistry->getManager()->willReturn($manager->reveal());
+        $managerRegistry->getManagerNames()->willReturn(['default', 'other']);
+
+        $managerTraitAware = new ConcreteService($managerRegistry->reveal());
+
+        $managerTraitAware->getDefaultManagerTest();
+    }
+
+    /**
+     * @test
+     */
     public function it_throws_if_repository_is_not_the_correct_type(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -129,6 +161,11 @@ abstract class ManagerTraitAware
 
 final class ConcreteService extends ManagerTraitAware
 {
+    public function getDefaultManagerTest(): EntityManagerInterface
+    {
+        return $this->getManager();
+    }
+
     public function getManagerTest(): EntityManagerInterface
     {
         return $this->getManager(new \stdClass());
@@ -147,7 +184,6 @@ final class ConcreteService extends ManagerTraitAware
 
 /**
  * @template T of object
- *
  * @extends EntityRepository<T>
  */
 class TestRepository extends EntityRepository
