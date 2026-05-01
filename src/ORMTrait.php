@@ -22,7 +22,7 @@ trait ORMTrait
      * @throws \InvalidArgumentException if $obj is not given and more than one manager exists
      * @throws \InvalidArgumentException if $obj is given and no manager exists for the class or if the manager is not an instance of EntityManagerInterface
      */
-    protected function getManager(object|string $obj = null): EntityManagerInterface
+    protected function getManager(object|string|null $obj = null): EntityManagerInterface
     {
         $obj = is_object($obj) ? $obj::class : (string) $obj;
 
@@ -60,7 +60,7 @@ trait ORMTrait
      *
      * @return ($expectedType is null ? EntityRepository<TEntity> : TRepository&EntityRepository<TEntity>)
      */
-    protected function getRepository(object|string $obj, string $expectedType = null): EntityRepository
+    protected function getRepository(object|string $obj, ?string $expectedType = null): EntityRepository
     {
         $cls = is_object($obj) ? $obj::class : $obj;
 
