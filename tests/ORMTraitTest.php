@@ -171,11 +171,17 @@ final class ConcreteService extends ManagerTraitAware
         return $this->getManager(new \stdClass());
     }
 
+    /**
+     * @return EntityRepository<\stdClass>
+     */
     public function getRepositoryTest(): EntityRepository
     {
         return $this->getRepository(new \stdClass());
     }
 
+    /**
+     * @return EntityRepository<\stdClass>
+     */
     public function getRepositoryWithTypeTest(): EntityRepository
     {
         return $this->getRepository(new \stdClass(), TestRepository::class);
