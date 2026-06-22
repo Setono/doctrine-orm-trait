@@ -6,8 +6,13 @@
 [![Code Coverage][ico-code-coverage]][link-code-coverage]
 [![Mutation testing][ico-infection]][link-infection]
 
-If you are like and me and usually [don't inject entity managers directly](https://matthiasnoback.nl/2014/05/inject-the-manager-registry-instead-of-the-entity-manager/),
-but inject the manager registry instead then this little library will come in handy.
+A tiny, dependency-light trait that gives your services convenient, type-safe access to Doctrine's
+entity managers and repositories.
+
+It's built for the common pattern of [injecting the `ManagerRegistry` instead of an `EntityManager`
+directly](https://matthiasnoback.nl/2014/05/inject-the-manager-registry-instead-of-the-entity-manager/):
+once you have the registry, this trait does the work of resolving the right manager and repository for
+a given entity — including the static type juggling — so you don't have to repeat it in every service.
 
 ## Installation
 
@@ -17,44 +22,75 @@ composer require setono/doctrine-orm-trait
 
 ## Usage
 
+Use the trait and assign the injected `ManagerRegistry` to the `$managerRegistry` property in your
+constructor. That's the only wiring required:
+
 ```php
 <?php
+
 use Doctrine\Persistence\ManagerRegistry;
 use Setono\Doctrine\ORMTrait;
 
-final class YourClass
+final class OrderProcessor
 {
-    /**
-     * Include this trait to use the getManager() and getRepository() methods below
-     */
     use ORMTrait;
-    
+
     public function __construct(ManagerRegistry $managerRegistry)
     {
         $this->managerRegistry = $managerRegistry;
     }
-    
-    public function someMethod(): void
+
+    public function process(Order $order): void
     {
-        /**
-         * $entity<T> is an entity managed by Doctrine or a class-string representing an entity managed by Doctrine
-         */
-        $entity = ;
-        
-        /** @var \Doctrine\ORM\EntityRepository<T> $repository */
-        $repository = $this->getRepository($entity);
-        
-        /** @var \Doctrine\ORM\EntityManagerInterface $manager */
-        $manager = $this->getManager($entity);
-        
-        // or do the following to get the default entity manager
-        /** @var \Doctrine\ORM\EntityManagerInterface $manager */
-        $manager = $this->getManager();
-        
-        $manager->persist($entity);
+        $manager = $this->getManager($order);
+
+        $manager->persist($order);
         $manager->flush();
     }
 }
+```
+
+The trait exposes two `protected` methods.
+
+### `getManager()` — resolve the entity manager
+
+Pass an entity instance or a class-string to get the manager responsible for that entity. Resolved
+managers are memoized, so repeated calls are cheap:
+
+```php
+$manager = $this->getManager($order);      // from an instance
+$manager = $this->getManager(Order::class); // from a class-string
+```
+
+Call it without arguments to get the **default** entity manager. If more than one manager is registered,
+this throws an `\InvalidArgumentException` — pass an entity instead so the trait knows which one you mean:
+
+```php
+$manager = $this->getManager();
+```
+
+### `getRepository()` — resolve the repository
+
+Like `getManager()`, this accepts an entity instance or a class-string and returns the matching
+`EntityRepository`:
+
+```php
+$repository = $this->getRepository(Order::class);
+
+$orders = $repository->findBy(['status' => 'pending']);
+```
+
+### Typed repositories
+
+If you have a custom repository class, pass it as the second argument. The trait asserts the repository
+is an instance of that type (throwing an `\InvalidArgumentException` otherwise) **and** narrows the
+return type for static analysis, so your IDE and PHPStan know about the repository's own methods:
+
+```php
+// $repository is statically typed as OrderRepository
+$repository = $this->getRepository(Order::class, OrderRepository::class);
+
+$orders = $repository->findPendingOrders();
 ```
 
 [ico-version]: https://poser.pugx.org/setono/doctrine-orm-trait/v/stable
