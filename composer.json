@@ -15,13 +15,20 @@
         "doctrine/persistence": "^1.3 || ^2.5 || ^3.1 || ^4.1"
     },
     "require-dev": {
-        "infection/infection": "^0.27",
+        "ergebnis/composer-normalize": "^2.52",
+        "infection/infection": "^0.27.11",
+        "jangregor/phpstan-prophecy": "^2.3",
         "phpspec/prophecy": "^1.20",
-        "phpspec/prophecy-phpunit": "^2.2",
+        "phpspec/prophecy-phpunit": "^2.5",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpstan/phpstan-webmozart-assert": "^2.0",
         "phpunit/phpunit": "^10.5",
-        "psalm/plugin-phpunit": "^0.19",
-        "setono/code-quality-pack": "^2.7",
-        "shipmonk/composer-dependency-analyser": "^1.8"
+        "rector/rector": "^2.5",
+        "shipmonk/composer-dependency-analyser": "^1.8",
+        "sylius-labs/coding-standard": "^4.5"
     },
     "prefer-stable": true,
     "autoload": {
@@ -38,12 +45,13 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": false,
             "ergebnis/composer-normalize": true,
-            "infection/extension-installer": true
+            "infection/extension-installer": true,
+            "phpstan/extension-installer": true
         },
         "sort-packages": true
     },
     "scripts": {
-        "analyse": "psalm",
+        "analyse": "phpstan",
         "check-style": "ecs check",
         "fix-style": "ecs check --fix",
         "phpunit": "phpunit"
